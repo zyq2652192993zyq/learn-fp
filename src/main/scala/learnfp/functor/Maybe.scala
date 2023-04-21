@@ -12,14 +12,18 @@ object Maybe {
     def fmap[A, B](a: Nothing[A])(fx: A => B): Nothing[B] = Nothing[B]()
   }
 
-  def nothing[A]():Maybe[A] = Nothing[A]()
-  def just[A](x:A):Maybe[A] = Just(x)
+  def nothing[A](): Maybe[A]  = Nothing[A]()
+  def just[A](x: A): Maybe[A] = Just(x)
 }
 
 object MaybeInstance {
   import Maybe._
 
-  implicit val maybeInstance:Functor[Maybe] = new Functor[Maybe] {
-    override def fmap[A, B](a: Maybe[A])(fx: A => B): Maybe[B] = ???
+  implicit val maybeInstance: Functor[Maybe] = new Functor[Maybe] {
+    override def fmap[A, B](a: Maybe[A])(fx: A => B): Maybe[B] =
+      a match {
+        case j: Just[A]    => Just.fmap(j)(fx)
+        case n: Nothing[A] => Nothing.fmap(n)(fx)
+      }
   }
 }

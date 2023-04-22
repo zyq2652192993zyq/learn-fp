@@ -10,7 +10,7 @@ import learnfp.monad.IdInstance._
 class IdTest extends WordSpecLike with Matchers {
   "id monad" should {
     "work" in {
-      { 10.pure[Id] >>= {x:Int => Id(x + 10)} } shouldBe 20.pure[Id]
+      { 10.pure[Id] >>= { x: Int => Id(x + 10) } } shouldBe 20.pure[Id]
     }
   }
 }

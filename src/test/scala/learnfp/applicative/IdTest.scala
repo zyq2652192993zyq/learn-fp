@@ -11,7 +11,7 @@ import learnfp.applicative.IdInstance._
 class IdTest extends WordSpecLike with Matchers {
   "id applicative" should {
     "work" in {
-      def foo(x:Int)(y:Int)(z:Int) = x + y + z
+      def foo(x: Int)(y: Int)(z: Int) = x + y + z
       foo _ `<$>` Id(10) <*> Id(20) <*> Id(30) shouldBe Id(10 + 20 + 30)
     }
   }

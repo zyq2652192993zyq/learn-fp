@@ -18,7 +18,8 @@ object TraversableInstances {
   implicit val idTraversableInstance = new Traversable[Id] {
     override def traverse[A, B, F[_]](xs: Id[A])(
         fx: A => F[B]
-    )(implicit foldable: Foldable[Id], functor: Functor[F], applicative: Applicative[F]): F[Id[B]] = ???
+    )(implicit foldable: Foldable[Id], functor: Functor[F], applicative: Applicative[F]): F[Id[B]] =
+      fx(xs.value).fmap(Id(_))
   }
 
   type STuple3[A] = (A, A, A)
@@ -27,13 +28,20 @@ object TraversableInstances {
   implicit val tuple3TraversableInstance = new Traversable[STuple3] {
     override def traverse[A, B, F[_]](xs: (A, A, A))(
         fx: A => F[B]
-    )(implicit foldable: Foldable[STuple3], functor: Functor[F], applicative: Applicative[F]): F[(B, B, B)] = ???
+    )(implicit foldable: Foldable[STuple3], functor: Functor[F], applicative: Applicative[F]): F[(B, B, B)] = {
+      (stuple3[B] _).curried `<$>` fx(xs._1) <*> fx(xs._2) <*> fx(xs._3)
+    }
   }
 
   implicit val listTraversableInstance = new Traversable[List] {
     override def traverse[A, B, F[_]](xs: List[A])(
         fx: A => F[B]
-    )(implicit foldable: Foldable[List], functor: Functor[F], applicative: Applicative[F]): F[List[B]] = ???
+    )(implicit foldable: Foldable[List], functor: Functor[F], applicative: Applicative[F]): F[List[B]] = {
+      xs.map(fx)
+        .foldRight(applicative.pure(List.empty[B]))((e, acc) => {
+          ((x: B, xs: List[B]) => x :: xs).curried `<$>` e <*> acc
+        })
+    }
   }
 }
 
@@ -53,7 +61,7 @@ class SequenceOps[A, C[_], F[_]](xs: C[F[A]])(
     functor: Functor[F],
     applicative: Applicative[F]
 ) {
-  def sequence: F[C[A]] = ???
+  def sequence: F[C[A]] = traversable.traverse(xs)(identity)
 }
 
 object SequenceOps {

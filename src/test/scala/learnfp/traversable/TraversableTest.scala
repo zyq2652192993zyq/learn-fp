@@ -15,7 +15,7 @@ class TraversableTest extends WordSpecLike with Matchers {
 
   "traversable" should {
     "traverse Id[Id]" in {
-      { Id(1) traverse {x:Int => Id(x * 2)} } shouldBe Id(Id(2))
+      { Id(1) traverse { x: Int => Id(x * 2) } } shouldBe Id(Id(2))
     }
 
     "sequence Id[Id]" in {
@@ -23,7 +23,7 @@ class TraversableTest extends WordSpecLike with Matchers {
     }
 
     "traverse Tuple3[Id]" in {
-      { stuple3(1, 2, 3) traverse {x:Int => Id(x * 2)} } shouldBe Id(2, 4, 6)
+      { stuple3(1, 2, 3) traverse { x: Int => Id(x * 2) } } shouldBe Id(2, 4, 6)
     }
 
     "sequence Tuple3[Id]" in {
@@ -35,7 +35,7 @@ class TraversableTest extends WordSpecLike with Matchers {
     }
 
     "traverse List[Id]" in {
-      { List(1, 2, 3, 4) traverse {x:Int => Id(x* 2)} } shouldBe Id(List(2, 4, 6, 8))
+      { List(1, 2, 3, 4) traverse { x: Int => Id(x * 2) } } shouldBe Id(List(2, 4, 6, 8))
     }
 
     import learnfp.functor.Maybe._
@@ -47,7 +47,7 @@ class TraversableTest extends WordSpecLike with Matchers {
     }
 
     "traverse Id[Maybe]" in {
-      { Id(5).traverse {x:Int => just(x + 1)} } shouldBe just(Id(6))
+      { Id(5).traverse { x: Int => just(x + 1) } } shouldBe just(Id(6))
     }
 
     "sequence Tuple3[Maybe]" in {
@@ -56,25 +56,25 @@ class TraversableTest extends WordSpecLike with Matchers {
     }
 
     "traverse Tuple3[Maybe]" in {
-      { stuple3(5, 6, 7) traverse {x:Int => just(x + 1) } } shouldBe just(6, 7, 8)
-      ( stuple3(5, 6, 7) traverse {x:Int => if (x == 6) nothing[Int] else just(x + 1) } ) shouldBe nothing()
+      { stuple3(5, 6, 7) traverse { x: Int => just(x + 1) } } shouldBe just(6, 7, 8)
+      (stuple3(5, 6, 7) traverse { x: Int => if (x == 6) nothing[Int] else just(x + 1) }) shouldBe nothing()
     }
 
     "sequence List[Maybe]" in {
       { List(just(5), just(10), just(3)) sequence } shouldBe just(List(5, 10, 3))
-      ( List(just(5), nothing[Int](), just(3)) sequence ) shouldBe nothing[Int]()
+      (List(just(5), nothing[Int](), just(3)) sequence) shouldBe nothing[Int]()
     }
 
     "traverse List[Maybe]" in {
-      { List(5, 10, 3) traverse {x:Int => just(x + 1)} } shouldBe just(List(6, 11, 4))
-      ( List(5, 10, 3) traverse {x:Int => if (x == 10) nothing[Int] else just(x + 1) } ) shouldBe nothing[Int]()
+      { List(5, 10, 3) traverse { x: Int => just(x + 1) } } shouldBe just(List(6, 11, 4))
+      (List(5, 10, 3) traverse { x: Int => if (x == 10) nothing[Int] else just(x + 1) }) shouldBe nothing[Int]()
     }
 
     import learnfp.functor.ListInstance._
     import learnfp.applicative.ListInstance._
 
     "traverse Id[List]" in {
-      Id(1) traverse {x:Int => List(x + 1) } shouldBe List(Id(2))
+      Id(1) traverse { x: Int => List(x + 1) } shouldBe List(Id(2))
     }
 
     "sequence Id[List]" in {
@@ -82,31 +82,34 @@ class TraversableTest extends WordSpecLike with Matchers {
     }
 
     "sequence Tuple3[List]" in {
-      ( stuple3(List(1, 2), List(3), List(4, 5)) sequence ) shouldBe List((1, 3, 4), (1, 3, 5), (2, 3, 4), (2, 3, 5))
+      (stuple3(List(1, 2), List(3), List(4, 5)) sequence) shouldBe List((1, 3, 4), (1, 3, 5), (2, 3, 4), (2, 3, 5))
     }
 
     "traverse Tuple3[List]" in {
-      ( stuple3(1, 3, 4) traverse {
+      (stuple3(1, 3, 4) traverse {
         case 1 => List(2, 3)
         case 3 => List(4)
         case 4 => List(5, 6)
-      } ) shouldBe List((2, 4, 5), (2, 4, 6), (3, 4, 5), (3, 4, 6))
+      }) shouldBe List((2, 4, 5), (2, 4, 6), (3, 4, 5), (3, 4, 6))
     }
 
     "sequence List[List]" in {
-      { List(List(1), List(2, 3), List(4, 5, 6)) sequence} shouldBe List(
-        List(1, 2, 4), List(1, 2, 5), List(1, 2, 6),
-        List(1, 3, 4), List(1, 3, 5), List(1, 3, 6))
+      { List(List(1), List(2, 3), List(4, 5, 6)) sequence } shouldBe List(
+        List(1, 2, 4),
+        List(1, 2, 5),
+        List(1, 2, 6),
+        List(1, 3, 4),
+        List(1, 3, 5),
+        List(1, 3, 6)
+      )
     }
 
     "traverse List[List]" in {
       List(1, 2, 3) traverse {
         case 1 => List(2)
-        case 2 => List(3,4)
+        case 2 => List(3, 4)
         case 3 => List(5, 6, 7)
-      } shouldBe List(
-        List(2, 3, 5), List(2, 3, 6), List(2, 3, 7),
-        List(2, 4, 5), List(2, 4, 6), List(2, 4, 7))
+      } shouldBe List(List(2, 3, 5), List(2, 3, 6), List(2, 3, 7), List(2, 4, 5), List(2, 4, 6), List(2, 4, 7))
     }
 
     import learnfp.functor.Disjunction._
@@ -114,8 +117,8 @@ class TraversableTest extends WordSpecLike with Matchers {
     import learnfp.applicative.DisjunctionInstance._
 
     type StringDisjunction[A] = Disjunction[String, A]
-    def r(x:Int):StringDisjunction[Int] = right[String, Int](x)
-    def l(x:String):StringDisjunction[Int] = left[String, Int](x)
+    def r(x: Int): StringDisjunction[Int]    = right[String, Int](x)
+    def l(x: String): StringDisjunction[Int] = left[String, Int](x)
 
     "sequence List[Disjunction]" in {
       { List(r(5), r(6), r(7)) sequence } shouldBe right[String, List[Int]](List(5, 6, 7));
@@ -138,39 +141,48 @@ class TraversableTest extends WordSpecLike with Matchers {
     import learnfp.functor.StateInstance._
     import learnfp.applicative.StateInstance._
     type StringState[A] = State[String, A]
-    def stringState[A](fx:String => (String, A)):StringState[A] = State[String, A](fx)
+    def stringState[A](fx: String => (String, A)): StringState[A] = State[String, A](fx)
 
     "sequence Id[State]" in {
-      { Id(stringState {s:String => (s + " boom", 6)}) sequence }.run("baam") shouldBe ("baam boom", Id(6))
+      { Id(stringState { s: String => (s + " boom", 6) }) sequence }.run("baam") shouldBe ("baam boom", Id(6))
     }
 
     "traverse Id[State]" in {
-      { Id(6) traverse {x:Int => stringState {s:String => (s + " boom", x + 2) } } }.run("baam") shouldBe ("baam boom", Id(8))
+      { Id(6) traverse { x: Int => stringState { s: String => (s + " boom", x + 2) } } }
+        .run("baam") shouldBe ("baam boom", Id(8))
     }
 
     "sequence Tuple3[State]" in {
-      { stuple3(
-        stringState {s:String => (s + " een", 1)},
-        stringState {s:String => (s + " twee", 2)},
-        stringState {s:String => (s + " drie", 3)}) sequence }.run("null") shouldBe ("null een twee drie", (1, 2, 3))
+      {
+        stuple3(
+          stringState { s: String => (s + " een", 1) },
+          stringState { s: String => (s + " twee", 2) },
+          stringState { s: String => (s + " drie", 3) }
+        ) sequence
+      }.run("null") shouldBe ("null een twee drie", (1, 2, 3))
     }
 
     "traverse Tuple3[State]" in {
-      { stuple3(1, 2, 3) traverse {
-        case 1 => stringState { s:String => (s + " een", 1) }
-        case 2 => stringState { s:String => (s + " twee", 2) }
-        case 3 => stringState { s:String => (s + " drie", 3) }
-      } }.run("null") shouldBe ("null een twee drie", (1, 2, 3))
+      {
+        stuple3(1, 2, 3) traverse {
+          case 1 => stringState { s: String => (s + " een", 1) }
+          case 2 => stringState { s: String => (s + " twee", 2) }
+          case 3 => stringState { s: String => (s + " drie", 3) }
+        }
+      }.run("null") shouldBe ("null een twee drie", (1, 2, 3))
     }
 
     "sequence List[State]" in {
-       { List(5.pure[String], stringState {s:String => (s + "boom", 6)}, 7.pure[String]) sequence }.run("baam ") shouldBe ("baam boom", List(5, 6, 7))
+      { List(5.pure[String], stringState { s: String => (s + "boom", 6) }, 7.pure[String]) sequence }
+        .run("baam ") shouldBe ("baam boom", List(5, 6, 7))
     }
 
     "traverse List[State]" in {
-      { List(5, 6, 7) traverse {x:Int =>
-        if (x == 6) stringState {s:String => (s + "boom", x * 2)}
-        else (x * 2).pure[String]}
+      {
+        List(5, 6, 7) traverse { x: Int =>
+          if (x == 6) stringState { s: String => (s + "boom", x * 2) }
+          else (x * 2).pure[String]
+        }
       }.run("baam ") shouldBe ("baam boom", List(10, 12, 14))
     }
 
@@ -181,46 +193,56 @@ class TraversableTest extends WordSpecLike with Matchers {
     import learnfp.monoid.ListMonoid._
     type StringWriter[A] = Writer[List[String], A];
 
-    def stringWriter[A](fx:() => (List[String], A)):StringWriter[A] = {
+    def stringWriter[A](fx: () => (List[String], A)): StringWriter[A] = {
       Writer[List[String], A](fx)
     }
 
     "sequence Id[Writer]" in {
-      { Id(stringWriter({() => (List("een"), 1)})) sequence }.run() shouldBe (List("een"), Id(1))
+      { Id(stringWriter({ () => (List("een"), 1) })) sequence }.run() shouldBe (List("een"), Id(1))
     }
 
     "traverse Id[Writer]" in {
-      { Id(1) traverse {x:Int => stringWriter {() => (List("een"), x*2)} } }.run() shouldBe (List("een"), Id(2))
+      { Id(1) traverse { x: Int => stringWriter { () => (List("een"), x * 2) } } }.run() shouldBe (List("een"), Id(2))
     }
 
     "sequence Tuple3[Writer]" in {
-      { stuple3(
-        stringWriter({() => (List("een"), 1)}),
-        stringWriter({() => (List("twee"), 2)}),
-        stringWriter({() => (List("drie"), 3)})) sequence }.run() shouldBe (List("een", "twee", "drie"), (1, 2, 3))
+      {
+        stuple3(
+          stringWriter({ () => (List("een"), 1) }),
+          stringWriter({ () => (List("twee"), 2) }),
+          stringWriter({ () => (List("drie"), 3) })
+        ) sequence
+      }.run() shouldBe (List("een", "twee", "drie"), (1, 2, 3))
     }
 
     "traverse Tuple3[Writer]" in {
       {
         stuple3(1, 2, 3) traverse {
-          case 1 => stringWriter {() => (List("een"), 2)}
-          case 2 => stringWriter {() => (List("twee"), 4)}
-          case 3 => stringWriter {() => (List("drie"), 6)}
+          case 1 => stringWriter { () => (List("een"), 2) }
+          case 2 => stringWriter { () => (List("twee"), 4) }
+          case 3 => stringWriter { () => (List("drie"), 6) }
         }
       }.run() shouldBe (List("een", "twee", "drie"), (2, 4, 6))
     }
 
     "sequence List[Writer]" in {
-      {List(stringWriter {() => (List("een"), 1)}, stringWriter {() => (List("twee"), 2)}, stringWriter {() => (List("drie"), 3)}) sequence}.run() shouldBe (
-        List("een", "twee", "drie"), List(1, 2, 3))
+      {
+        List(
+          stringWriter { () => (List("een"), 1) },
+          stringWriter { () => (List("twee"), 2) },
+          stringWriter { () => (List("drie"), 3) }
+        ) sequence
+      }.run() shouldBe (List("een", "twee", "drie"), List(1, 2, 3))
     }
 
     "traverse List[Writer]" in {
-      { List(1, 2, 3) traverse {
-        case 1 => stringWriter { () => (List("een"), 2) }
-        case 2 => stringWriter { () => (List("twee"), 4) }
-        case 3 => stringWriter { () => (List("drie"), 6) }
-      }}.run() shouldBe (List("een", "twee", "drie"), List(2, 4, 6))
+      {
+        List(1, 2, 3) traverse {
+          case 1 => stringWriter { () => (List("een"), 2) }
+          case 2 => stringWriter { () => (List("twee"), 4) }
+          case 3 => stringWriter { () => (List("drie"), 6) }
+        }
+      }.run() shouldBe (List("een", "twee", "drie"), List(2, 4, 6))
     }
   }
 }
